@@ -65,6 +65,39 @@ l(θ)越大，证明我们得到的系数theta越好，因为在函数最优化�
 [朴素贝叶斯代码来源](https://github.com/Asia-Lee/Naive_Bayes)
 ## K-近邻算法(K-Nearest Neighbor,KNN分类，也可用于回归)
 ## K-Means算法(聚类)
+[参考](https://blog.csdn.net/llh_1178/article/details/81633396?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-3&utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-3)
+#### 聚类原理
+将某一些数据分为不同的类别，在相同的类别中数据之间的距离应该都很近，也就是说离得越近的数据应该越相似，再进一步说明，**数据之间的相似度与它们之间的欧式距离成反比**。这就是k-means模型的假设。 <br>
+有了这个假设，我们对将数据分为不同的类别的算法就更明确了，尽可能将离得近的数据划分为一个类别。不妨假设需要将数据{xi}聚为k类，经过聚类之后每个数据所属的类别为{ti}，而这k个聚类的中心为{μi}。于是定义如下的损失函数：![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/kmeans.png)kmeans模型的目的是找寻最佳的{ti}，使损失函数最小，之后就可以对聚类中心{μi}直接计算了。由此可见，它既是聚类的最终结果，也是需要估算的模型参数。
+#### 聚类过程
+在k-means的损失函数中存在两个未知的参数：一个是每个数据所属的类别{ti}；一个是每个聚类的中心{μi}。这两个未知的参数是相互依存的：如果知道每个数据的所属类别，那么类别的所有数据的平均值就是这个类别的中心；如果知道每个类别的中心，那么就是计算数据与中心的距离，再根据距离的大小可以推断出数据属于哪一个类别。 
+- 聚类属于无监督学习，不知道y的标记分为k类
+- K-Means算法分为两个步骤：第一步：**簇分配**，随机选K个点作为中心，计算到这K个点的距离，分为K个簇；第二步：**移动聚类中心：**重新计算每个簇的中心(求平均值)，移动中心，重复以上步骤。
+#### 类别数量的确定和聚类中心的初始化
+一般情况下，随着分类组数的增加，损失函数会减少，但是分类组数过多会造成过拟合，分类组数过少又会造成欠拟合，因此，在确定分类组数之前，可以进行一个数据经过统计，观察损失函数随着K值的增加如何变化，看损失函数随着k值变化的图像上有无拐点，若有拐点，则表示当聚类个数小于拐点值时，误差平方和会下降的很快；当聚类个数超过拐点时，误差平方和虽然会继续下降，但是下降的速度会缓减，而这个转折点就是最佳的聚类个数了，我们也称其为`“肘部法则”`。但是在现实情况中，多数会随着k值的增加损失函数不断减小，不存在明显的拐点。那么这种情况，K值的选择主要还是根据经验以及利用k-means聚类的目的来决定。<br>
+对于聚类数目K值较小（K<10）的情况下，我们可以多次随机选取不同聚类中心，最后比较各自迭代完成后的畸变函数值，畸变函数越小，则说明聚类效果更优。但是在k值较大的情况下，比如上百类甚至上千万类，这时候重新选取不同的聚类中心可能就没有很好的效果了。
+#### [K-Means算法的应用](https://github.com/lawlite19/MachineLearning_Python#%E4%BA%94k-means%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95)
+* 将图片的像素分为若干类，然后用这个类代替原来的像素值
+```
+# 聚类算法
+def runKMeans(X,initial_centroids,max_iters,plot_process):
+    m,n = X.shape                   # 数据条数和维度
+    K = initial_centroids.shape[0]  # 类数
+    centroids = initial_centroids   # 记录当前类中心
+    previous_centroids = centroids  # 记录上一次类中心
+    idx = np.zeros((m,1))           # 每条数据属于哪个类
+    
+    for i in range(max_iters):      # 迭代次数
+        print u'迭代计算次数：%d'%(i+1)
+        idx = findClosestCentroids(X, centroids)
+        if plot_process:    # 如果绘制图像
+            plt = plotProcessKMeans(X,centroids,previous_centroids) # 画聚类中心的移动过程
+            previous_centroids = centroids  # 重置
+        centroids = computerCentroids(X, idx, K)    # 重新计算类中心
+    if plot_process:    # 显示最终的绘制结果
+        plt.show()
+    return centroids,idx    # 返回聚类中心和数据属于哪个类
+```
 ## PCA主成分分析(降维)
 ## BP神经网络(原理)
 ## Aprioir(不属于Sklearn算法，关联挖掘算法)
