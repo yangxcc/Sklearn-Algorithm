@@ -78,6 +78,7 @@ l(θ)越大，证明我们得到的系数theta越好，因为在函数最优化�
 对于聚类数目K值较小（K<10）的情况下，我们可以多次随机选取不同聚类中心，最后比较各自迭代完成后的畸变函数值，畸变函数越小，则说明聚类效果更优。但是在k值较大的情况下，比如上百类甚至上千万类，这时候重新选取不同的聚类中心可能就没有很好的效果了。
 #### [K-Means算法的应用](https://github.com/lawlite19/MachineLearning_Python#%E4%BA%94k-means%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95)
 * 将图片的像素分为若干类，然后用这个类代替原来的像素值
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/kmeans压缩图片.png)
 ```
 # 聚类算法
 def runKMeans(X,initial_centroids,max_iters,plot_process):
@@ -99,6 +100,7 @@ def runKMeans(X,initial_centroids,max_iters,plot_process):
     return centroids,idx    # 返回聚类中心和数据属于哪个类
 ```
 * [对鸢尾花的数据进行聚类](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/K-Means/K-Means_scikit-learn2.py)
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/kmeans鸢尾花数据集聚类.png)
 
 
 ## PCA主成分分析(降维)
