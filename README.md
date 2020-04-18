@@ -98,6 +98,9 @@ def runKMeans(X,initial_centroids,max_iters,plot_process):
         plt.show()
     return centroids,idx    # 返回聚类中心和数据属于哪个类
 ```
+* [对鸢尾花的数据进行聚类](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/K-Means/K-Means_scikit-learn2.py)
+
+
 ## PCA主成分分析(降维)
 ## BP神经网络(原理)
 ## Aprioir(不属于Sklearn算法，关联挖掘算法)
