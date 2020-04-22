@@ -152,5 +152,42 @@ def runKMeans(X,initial_centroids,max_iters,plot_process):
 通过调用sklearn提供的鸢尾花数据集和kmeans算法，来演示聚类结果。<br>
 ![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/kmeans鸢尾花数据聚类.png)
 ## PCA主成分分析(降维)
+#### 背景
+在许多领域的研究与应用中，通常需要对含有多个变量的数据进行观测、收集之后进行分析寻找规律，多变量大数据集中包含丰富的信息，但在一定程度上也会增加收集难度和分析难度，而且在大多数情况下，许多变量之间可能还存在相关性，从而增加了问题分析的复杂性。如果分别对每个指标进行分析，分析往往是孤立的，不能完全利用数据中的信息，因此盲目减少指标会损失很多有用的信息，从而产生错误的结论。<br>
+因此需要找到一种合理的方法，**在减少需要分析的指标同时，尽量减少原指标包含信息的损失**，以达到对所收集数据进行全面分析的目的。由于各变量之间存在一定的相关关系，因此可以考虑将关系紧密的变量变成尽可能少的新变量，使这些新变量是两两不相关的，那么就可以用较少的综合指标分别代表存在于各个变量中的各类信息。主成分分析与因子分析就属于这类降维算法。<br>
+* 数据降维有以下优点：（1）使数据集更易使用 （2）降低算法的计算开销 （3）去除噪声 （4）使得结果更容易理解<br>
+#### [PCA原理详解](https://www.zhihu.com/question/41120789)
+PCA(Principal Component Analysis)一种使用最广泛的数据降维算法。PCA的主要思想是将n维特征映射到k维上，这k维是全新的**正交特征**也被称为主成分，是在原有n维特征的基础上重新构造出来的k维特征。PCA的工作就是从原始的空间中顺序地找一组相互正交的坐标轴，新的坐标轴的选择与数据本身是密切相关的。其中，第一个新坐标轴选择是原始数据中方差最大的方向，第二个新坐标轴选取是与第一个坐标轴正交的平面中使得方差最大的，第三个轴是与第1,2个轴正交的平面中方差最大的。依次类推，可以得到n个这样的坐标轴。通过这种方式获得的新的坐标轴，我们发现，大部分方差都包含在前面k个坐标轴中，后面的坐标轴所含的方差几乎为0。于是，我们可以忽略余下的坐标轴，只保留前面k个含有绝大部分方差的坐标轴。事实上，这相当于只保留包含绝大部分方差的维度特征，而忽略包含方差几乎为0的特征维度，实现对数据特征的降维处理。
+##### 什么是降维
+如下述数据：
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/PCA_01.png)<br>
+这种一维数据可以放在以为坐标轴上，但是数据需要经过处理，假设房价样本用X表示，均值用x表示，然后以x均值为坐标轴的原点，以x为原点，即x=0，其余数据均减去x，即10-x,2-x...这个过程称为“中心化”。“中心化”处理的原因是，这些数字后继会参与统计运算，比如求样本方差，中间就包含了X<sub>i</sub>-x，结合求方差的公式，用“中心化”的数据就可以直接算出“房价”的样本方差，“中心化”之后可以看出数据大概可以分为两类<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/PCA_02.png)<br>
+现在新采集了房屋的面积，可以看出两者完全正相关，有一列其实是多余的，求出房屋样本、面积样本的均值，分别对房屋样本、面积样本进行“中心化”后得到：<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/PCA_03.png)<br>
+房价(X)和面积(Y)的样本协方差是这样的：<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/协方差公式.png)<br>
+可见，经过中心化的数据能过简化计算过程，把二维数据画在二维坐标系中，可以看出他们排列成一条直线：<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/PCA_04.png)<br>
+如果旋转坐标系，让横坐标和这条直线重合：<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/PCA_05.webp)<br>
+旋转后的坐标系，横纵坐标不再代表“面积”，“房价”，而是两者的混合（线性组合），这里把他们称作主元1，主元2，坐标值很容易用勾股定理(根据直线的斜率求夹角)计算出来，很显然a,b,c,d,e这些点在“主元2”上的坐标为0，把所有的数据换算到新的坐标系上：<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/PCA_06.png)<br>
+因为主元2上的值全部为0，完全是多余的，因此我们可以舍弃主元2，只保留主元1，这样有把数据降成了一维，而且没有丢失任何信息。
+##### 非理想情况下如何降维
+上面是比较极端的情况，就是房价和面积完全正比，所以二维数据会在一条直线上。以下面数据为例<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/PCA_07.png)<br>
+和上面的处理一样，把房价、面积表现在坐标轴上，与上面不一样是，这些点没有完全在同一条直线上，见[image/PCA_08.png](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/PCA_08.png)
+从线性代数的角度来考虑降维，二维坐标系总有各自的标准正交基（也就是两两正交、模长为1的基，**e<sub>1</sub>，e<sub>2></sub>** ），在某个坐标系中的任意一点q(x,y)都能够用**e<sub>1</sub>，e<sub>2></sub>** 的线性组合来表示，q(x,y)=x**e<sub>1</sub>**+y**e<sub>2</sub>** ，只是在不同的坐标系中，基前的系数不一样。但是q点到原点的距离是不会变化的，因此，在某个坐标系下分配给x较多，分配给y的必定较少，反之亦然，最极端的情况是在某个坐标系下，全部分配给了x，使得y=0。   对于两个点a(x1,y1)，b(x2,y2)，为了降维应该尽可能多的分配给(x1,x2)，较少的分配给(y1,y2)<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/PCA_09.webp)<br>
+##### 主元分析
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/主元分析.png)<br>
+随着坐标系的不同，X1,X2的值会不断变化<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/主元分析2.png)<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/主元分析3.png)<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/主元分析4.png)<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/主元分析5.png)<br>
+![](https://github.com/yangxcc/Sklearn-Algorithm/blob/master/image/主元分析6.png)<br>
+[PCA的理解来自于此博客](https://www.zhihu.com/question/41120789)
 ## BP神经网络(原理)
 ## Aprioir(不属于Sklearn算法，关联挖掘算法)
